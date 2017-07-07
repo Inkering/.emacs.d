@@ -15,7 +15,7 @@
 (global-linum-mode t)
 (setq backup-directory-alist `((".*" . ,temporary-file-directory))
       auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
-(toggle-scroll-bar -1) 
+(toggle-scroll-bar -1)
 
 ;;; Packages
 ;;;; Install Melpa
@@ -38,7 +38,9 @@
 (use-package org
   :config
   (setq org-todo-keywords
-		'((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE"))))
+		'((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
+  (setq org-agenda-files '("~/Dropbox/OrgFiles"))
+  (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
 
 (use-package python)
 
@@ -145,16 +147,18 @@
   :config
   (which-key-mode))
 
+(use-package ledger-mode :ensure
+  :config
+  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode))
+  (setq ledger-mode-should-check-version nil)
+  (setq ledger-report-links-in-register nil)
+  (setq ledger-binary-path "hledger"))
+
 ;;;;; git integration
 (use-package magit :ensure
   :bind ("C-x g" . magit-status)
   :config
   (setq magit-completing-read-function 'ivy-completing-read))
-
-;;;;; Handle some plain-text finances
-(use-package hledger-mode :ensure
-  :config
-  (add-to-list 'auto-mode-alist '("\\.journal\\'" . hledger-mode)))
 
 ;;;;; Ivy completion framework
 (use-package ivy :ensure
@@ -186,9 +190,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(org-agenda-files
+   (quote
+	("~/Dropbox/OrgFiles/precitech.org" "~/Dropbox/OrgFiles/peterpap.org")))
  '(package-selected-packages
    (quote
-	(markdown-mode company-c-headers company-jedi magit undo-tree quelpa-use-package)))
+	(ledger-mode markdown-mode company-c-headers company-jedi magit undo-tree quelpa-use-package)))
  '(python-shell-interpreter "/Users/dieterbrehm/anaconda/bin/python3.5"))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
