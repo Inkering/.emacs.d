@@ -30,6 +30,17 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;;;; I don't need quelpa yet
+;(setq quelpa-update-melpa-p nil)
+;(unless (require 'quelpa nil t)
+;  (with-temp-buffer
+;	(url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
+;	(eval-buffer)))
+
+;;;; install quelpa-use-package, it's handy
+;(quelpa 'quelpa-use-package)
+;(require 'quelpa-use-package)
+
 ;;;; Internal Packages
 
 ;;;;; org for organizational tool
@@ -124,8 +135,8 @@
 (use-package elpy :ensure
   :config
   (elpy-enable)
-  (setq elpy-rpc-python-command "~/anaconda/bin/python3.5")
-  (setq python-shell-interpreter "~/anaconda/bin/python3.5"))
+  (setq elpy-rpc-python-command "/Users/dieterbrehm/anaconda/bin/python3.5")
+  (setq python-shell-interpreter "/Users/dieterbrehm/anaconda/bin/python3.5"))
 
 ;;;;;Web dev tools
 (use-package rainbow-mode :ensure)
