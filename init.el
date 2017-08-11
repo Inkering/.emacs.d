@@ -1,5 +1,7 @@
 ;;; Emacs Config
 ;;;; indentation
+
+
 (setq c-default-style "linux"
       c-basic-offset 4
       sgml-basic-offset 4)
@@ -15,33 +17,51 @@
 (global-linum-mode t)
 (setq backup-directory-alist `((".*" . ,temporary-file-directory))
       auto-save-file-name-transforms `((".*" ,temporary-file-directory t)))
+
+;;;;; don't show scroll bars
 (toggle-scroll-bar -1)
+
+;;;;; turn all yes or no's to y's or n's
+(fset 'yes-or-no-p 'y-or-n-p)
 
 ;;; Packages
 ;;;; Install Melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
-(setq quelpa-update-melpa-p nil)
-(unless (require 'quelpa nil t)
-  (with-temp-buffer
-	(url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
-	(eval-buffer)))
-
-;;;; install quelpa-use-package, it's handy
-(quelpa 'quelpa-use-package)
-(require 'quelpa-use-package)
 
 ;;;; Internal Packages
 
 ;;;;; org for organizational tool
 (use-package org
   :config
+  (global-set-key (kbd "C-c c") 'org-capture)
   (setq org-todo-keywords
-		'((sequence "TODO" "IN-PROGRESS" "WAITING" "DONE")))
-  (setq org-agenda-files '("~/Dropbox/OrgFiles"))
+		'((sequence "TODO" "IN-PROGRESS" "TO-CHARGE" "WAITING" "DONE")))
+  (setq org-agenda-files '("~/Dropbox/OrgFiles/"))
+  (setq org-default-notes-file "~/Dropbox/OrgFiles/notes.org")
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
 
+;;;;; a new regularly spaced font
+'(variable-pitch ((t (:family "Helvetica Neue" :height 160))))
+
+;;;;; function allowing for monospace and variable-pitched fonts in one buffer,
+;;;;; for instance in a org-mode buffer with code documentation.
+ (defun set-buffer-variable-pitch ()
+    (interactive)
+    (variable-pitch-mode t)
+    (setq line-spacing 3)
+     (set-face-attribute 'org-table nil :inherit 'fixed-pitch)
+     (set-face-attribute 'org-code nil :inherit 'fixed-pitch)
+     (set-face-attribute 'org-block nil :inherit 'fixed-pitch)
+     (set-face-attribute 'org-block-background nil :inherit 'fixed-pitch))
+
+  (add-hook 'org-mode-hook 'set-buffer-variable-pitch)
+  (add-hook 'eww-mode-hook 'set-buffer-variable-pitch)
+  (add-hook 'markdown-mode-hook 'set-buffer-variable-pitch)
+  (add-hook 'Info-mode-hook 'set-buffer-variable-pitch)
+
+;;;;; default python package
 (use-package python)
 
 ;;;;; Smarter buffer management
@@ -82,7 +102,8 @@
   (setq company-idle-delay 0.1)
   (bind-key "<C-tab>" 'company-manual-begin))
 
-(use-package company-jedi :ensure          ;;; company-mode completion back-end for Python JEDI
+;;;;; company-mode completion back-end for Python JEDI
+(use-package company-jedi :ensure
   :config
   (add-hook 'python-mode-hook 'jedi:setup)
   (setq jedi:complete-on-dot t)
@@ -103,13 +124,17 @@
 (use-package elpy :ensure
   :config
   (elpy-enable)
-  (setq elpy-rpc-python-command "/Users/dieterbrehm/anaconda/bin/python3.5")
-  (setq python-shell-interpreter "/Users/dieterbrehm/anaconda/bin/python3.5"))
+  (setq elpy-rpc-python-command "~/anaconda/bin/python3.5")
+  (setq python-shell-interpreter "~/anaconda/bin/python3.5"))
 
 ;;;;;Web dev tools
 (use-package rainbow-mode :ensure)
 
 (use-package json-mode :ensure)
+
+(use-package js2-mode :ensure
+  :config
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
 (use-package scss-mode :ensure
   :config
@@ -122,6 +147,16 @@
   (add-hook 'sgml-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
 
+(use-package web-mode :ensure
+  :config
+  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
 ;;;;; syntax for markdown, essential for Readme files
 (use-package markdown-mode :ensure
   :commands (markdown-mode gfm-mode)
@@ -152,9 +187,9 @@
   (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode))
   (setq ledger-mode-should-check-version nil)
   (setq ledger-report-links-in-register nil)
-  (setq ledger-binary-path "hledger"))
+  (setq ledger-binary-path "git"))
 
-;;;;; git integration
+;;;;; hledger integration
 (use-package magit :ensure
   :bind ("C-x g" . magit-status)
   :config
@@ -170,8 +205,21 @@
 ;;;;; Stuff for ivy
 (use-package swiper :ensure)
 
+;;;;; better M-x autocomplete
+(use-package smex :ensure
+  :config
+  (global-set-key [remap execute-extended-command] 'smex)
+  )
+
 ;;;;; Stuff for ivy
 (use-package counsel :ensure)
+
+;;;;; plaintext organizational tool
+(use-package deft :ensure
+  :config
+  (setq deft-extensions '("txt" "tex" "org"))
+  (setq deft-directory "~/Dropbox/OrgFiles")
+  (setq deft-recursive t))
 
 ;;;;; A fancy mode line
 (use-package smart-mode-line :ensure
@@ -184,19 +232,14 @@
 (use-package base16-theme :ensure
   :config
   (load-theme 'base16-default-dark t))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(org-agenda-files
-   (quote
-	("~/Dropbox/OrgFiles/precitech.org" "~/Dropbox/OrgFiles/peterpap.org")))
  '(package-selected-packages
    (quote
-	(ledger-mode markdown-mode company-c-headers company-jedi magit undo-tree quelpa-use-package)))
- '(python-shell-interpreter "/Users/dieterbrehm/anaconda/bin/python3.5"))
+	(js2-mode smex r which-key web-mode undo-tree sublimity smart-mode-line scss-mode rainbow-mode quelpa-use-package neotree markdown-mode magit ledger-mode json-mode hledger-mode emmet-mode elpy deft counsel company-statistics company-jedi company-c-headers base16-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
