@@ -31,17 +31,6 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
-;;;; I don't need quelpa yet
-;(setq quelpa-update-melpa-p nil)
-;(unless (require 'quelpa nil t)
-;  (with-temp-buffer
-;	(url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
-;	(eval-buffer)))
-
-;;;; install quelpa-use-package, it's handy
-;(quelpa 'quelpa-use-package)
-;(require 'quelpa-use-package)
-
 ;;;; Internal Packages
 
 ;;;;; org for organizational tool
@@ -169,6 +158,7 @@
   (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
   (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+
 ;;;;; syntax for markdown, essential for Readme files
 (use-package markdown-mode :ensure
   :commands (markdown-mode gfm-mode)
@@ -194,14 +184,6 @@
   :config
   (which-key-mode))
 
-(use-package ledger-mode :ensure
-  :config
-  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode))
-  (setq ledger-mode-should-check-version nil)
-  (setq ledger-report-links-in-register nil)
-  (setq ledger-binary-path "git"))
-
-;;;;; hledger integration
 (use-package magit :ensure
   :bind ("C-x g" . magit-status)
   :config
