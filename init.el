@@ -9,6 +9,7 @@
 (setq-default tab-width 4)
 
 ;;;; misc
+(set-face-attribute 'default t :font "Consolas 11")
 (setq-default show-trailing-whitespace t)
 (savehist-mode 1)
 (show-paren-mode 1)
