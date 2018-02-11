@@ -100,7 +100,7 @@
   :config
   (global-company-mode)
   (setq company-idle-delay 0.1)
-  (bind-key "<C-tab>" 'company-manual-begin))
+  (bind-key "<S-SPC>" 'company-complete))
 
 ;;;;; company-mode completion back-end for Python JEDI
 (use-package company-jedi :ensure
