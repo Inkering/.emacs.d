@@ -1,6 +1,5 @@
-;;; Emacs Config
+;;; Emacs Config : git edition
 ;;;; indentation
-
 
 (setq c-default-style "linux"
       c-basic-offset 4
@@ -120,6 +119,12 @@
 (use-package company-statistics :ensure
   :config
   (company-statistics-mode))
+
+(use-package company-tern :ensure
+  :config
+  (add-to-list 'company-backends 'company-tern)
+  (setq company-tern-property-marker "*")
+  (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
 
 ;;;;; python dev tools
 (use-package elpy :ensure
