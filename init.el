@@ -1,5 +1,6 @@
-;;; Emacs Config : git edition
+;;; Emacs Config
 ;;;; indentation
+
 
 (setq c-default-style "linux"
       c-basic-offset 4
@@ -8,7 +9,6 @@
 (setq-default tab-width 4)
 
 ;;;; misc
-(set-face-attribute 'default t :font "Consolas 11")
 (setq-default show-trailing-whitespace t)
 (savehist-mode 1)
 (show-paren-mode 1)
@@ -30,6 +30,17 @@
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
 (package-initialize)
 
+;;;; I don't need quelpa yet
+;(setq quelpa-update-melpa-p nil)
+;(unless (require 'quelpa nil t)
+;  (with-temp-buffer
+;	(url-insert-file-contents "https://raw.github.com/quelpa/quelpa/master/bootstrap.el")
+;	(eval-buffer)))
+
+;;;; install quelpa-use-package, it's handy
+;(quelpa 'quelpa-use-package)
+;(require 'quelpa-use-package)
+
 ;;;; Internal Packages
 
 ;;;;; org for organizational tool
@@ -37,7 +48,7 @@
   :config
   (global-set-key (kbd "C-c c") 'org-capture)
   (setq org-todo-keywords
-		'((sequence "TODO" "IN-PROGRESS" "TO-CHARGE" "WAITING" "DONE")))
+		'((sequence "TODO" "IN-PROGRESS" "TO-CHARGE" "WAITING" "OWNED" "DONE" )))
   (setq org-agenda-files '("~/Dropbox/OrgFiles/"))
   (setq org-default-notes-file "~/Dropbox/OrgFiles/notes.org")
   (add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
@@ -100,7 +111,7 @@
   :config
   (global-company-mode)
   (setq company-idle-delay 0.1)
-  (bind-key "<S-SPC>" 'company-complete))
+  (bind-key "<C-tab>" 'company-manual-begin))
 
 ;;;;; company-mode completion back-end for Python JEDI
 (use-package company-jedi :ensure
@@ -112,6 +123,10 @@
     (add-to-list 'company-backends 'company-jedi))
   (add-hook 'python-mode-hook 'config/enable-company-jedi))
 
+(use-package company-tern :ensure
+  :config
+  (add-to-list 'company-backends 'company-tern))
+
 (use-package company-c-headers :ensure
   :config
   (add-to-list 'company-backends 'company-c-headers))
@@ -119,12 +134,6 @@
 (use-package company-statistics :ensure
   :config
   (company-statistics-mode))
-
-(use-package company-tern :ensure
-  :config
-  (add-to-list 'company-backends 'company-tern)
-  (setq company-tern-property-marker "*")
-  (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
 
 ;;;;; python dev tools
 (use-package elpy :ensure
@@ -136,23 +145,29 @@
 ;;;;;Web dev tools
 (use-package rainbow-mode :ensure)
 
+;;;;; highlighting for json files
 (use-package json-mode :ensure)
 
+;;;;; better javascript highlighting and analysis
 (use-package js2-mode :ensure
   :config
   (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
 
+;;;;; highlight and build sass/scss files
 (use-package scss-mode :ensure
   :config
   (setq exec-path (cons (expand-file-name "~/.gem/ruby/2.0.0/cache/") exec-path))
   (autoload 'scss-mode "scss-mode")
   (add-to-list 'auto-mode-alist '("\\.scss\\'" . scss-mode)))
 
+;;;;; expand common css and html tags
 (use-package emmet-mode :ensure
   :config
   (add-hook 'sgml-mode-hook 'emmet-mode)
   (add-hook 'css-mode-hook 'emmet-mode))
 
+;;;;; highlight multiple types of syntax in their respective styles
+;;;;; e.g jsx templates
 (use-package web-mode :ensure
   :config
   (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
@@ -189,6 +204,15 @@
   :config
   (which-key-mode))
 
+;;;;; I can even manage my finances in emacs!
+(use-package ledger-mode :ensure
+  :config
+  (add-to-list 'auto-mode-alist '("\\.journal\\'" . ledger-mode))
+  (setq ledger-mode-should-check-version nil)
+  (setq ledger-report-links-in-register nil)
+  (setq ledger-binary-path "git"))
+
+;;;;; hledger integration
 (use-package magit :ensure
   :bind ("C-x g" . magit-status)
   :config
@@ -203,7 +227,8 @@
 
 ;;;;; Stuff for ivy
 (use-package swiper :ensure
-  :bind ("C-s" . swiper))
+  :bind ("C-s" . swiper)
+  )
 
 ;;;;; better M-x autocomplete
 (use-package smex :ensure
@@ -233,11 +258,20 @@
   :config
   (load-theme 'base16-default-dark t))
 
+;;;;; underline the entirety of the current line
+(global-hl-line-mode t)
+;(set-face-background 'hl-line nil)
+;(set-face-foreground 'hl-line nil)
+;(set-face-underline-p 'hl-line t)
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(package-selected-packages
+   (quote
+	(company-tern hl-line-mode js2-mode smex r which-key web-mode undo-tree sublimity smart-mode-line scss-mode rainbow-mode quelpa-use-package neotree markdown-mode magit ledger-mode json-mode hledger-mode emmet-mode elpy deft counsel company-statistics company-jedi company-c-headers base16-theme))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
