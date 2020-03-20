@@ -8,20 +8,25 @@
 (setq-default file-name-handler-alist nil
               gc-cons-threshold 402653184
 							gc-cons-percentage 0.6)
-
 ;; misc
 (setq c-default-style "linux"
-      c-basic-offset 4
-      sgml-basic-offset 4)
+      c-basic-offset 2
+      sgml-basic-offset 2)
 (c-set-offset `inline-open 0)
 (setq-default tab-width 2)
+(setq visible-bell t)
+
+(add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
+
+;; mode for handling beancount - a ledger utility
+(require 'beancount)
+  (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
 
 ;; Install Melpa
 (require 'package)
-(setq-default package-archives '(("gnu" . "https://elpa.gnu.org/packages/")
-                                 ("melpa" . "https://melpa.org/packages/")
-                                 ("org" . "https://orgmode.org/elpa/"))
-              package-enable-at-startup nil
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/"))
+(setq-default package-enable-at-startup nil
 							load-prefer-newer t)
 (package-initialize)
 
@@ -29,16 +34,56 @@
   (package-refresh-contents)
 	(package-install 'use-package))
 
-;; set font
-(set-face-attribute 'default t :font "Consolas 11")
+(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
+
+;; (org-babel-load-file (expand-file-name "~/.emacs.d/literate-config.org"))
+
+;; set font based on Operating system
+(if (eq system-type 'ms-dos)
+		(progn
+			(set-face-attribute 'default t :font "Consolas 11")))
+
+(if (eq system-type 'darwin)
+		(progn
+			(set-face-attribute 'default t :font "Monaco 12")))
+
+(if (eq system-type 'gnu/linux)
+		(progn
+			(set-face-attribute 'default t :font "Hack 12")))
 
 ;; global show whitespace
 (setq-default show-trailing-whitespace t)
 (savehist-mode 1)
+
+;; highlight current line
+;;(global-hl-line-mode +1)
+
+;; highlight parens
 (show-paren-mode 1)
+
+;; make sure paths play nice in Mac OS
+(use-package exec-path-from-shell :ensure)
+
+;; make emacs obey shell path
+(when (memq window-system '(mac ns x))
+  (exec-path-from-shell-initialize))
+
+;; show where we are horizontally
 (column-number-mode 1)
+
+;; turn off the tool bar
 (tool-bar-mode -1)
-(global-linum-mode t)
+
+;; show line numbers in any programming mode
+;; (add-hook 'prog-mode-hook 'display-line-numbers-mode)
+
+;; we want pandoc in org and markdown
+(use-package pandoc-mode :ensure
+	:config
+	(add-hook 'pandoc-mode 'org-mode)
+	(add-hook 'pandoc-mode 'markdown-mode))
+
+;; delete stuff like a sane person
 (delete-selection-mode 1)
 
 ;; when using fill-paragraph or fill-region or auto-fill, set desired width
@@ -62,37 +107,32 @@
 ;; turn all yes or no's to y's or n's
 (fset 'yes-or-no-p 'y-or-n-p)
 
-;; org for organizational tool
-(use-package org :ensure
-  :config
-  (global-set-key (kbd "C-c c") 'org-capture)
-  (setq org-todo-keywords
-		'((sequence "TODO" "DONE")))
-  (setq org-agenda-files '("~/Dropbox/OrgFiles"))
-  (setq org-default-notes-file "~/Dropbox/OrgFiles/notes.org")
-  (setq org-log-done 'time)
-  (setq org-log-into-drawer "LOGBOOK")
-  (setq org-clock-into-drawer 1)
-	(setq org-src-fontify-natively t)
-	(setq
-	 org-agenda-custom-commands
-	 '(("c" "composite agenda view"
-			((agenda "")
-			 (tags "Art"
-             ((org-agenda-overriding-header "Artistic Tasks")
-              (org-tags-match-list-sublevels nil)))
-			 (tags "+Olin+Misc"
-						 ((org-agenda-overriding-header "Misc Olin Related Tasks")
-              (org-tags-match-list-sublevels nil)))
-			 )))
-	 ;; only show entries schedules for the current day
-	 org-agenda-span 'day)
+;; smart project detection, jumping, and management
+(use-package projectile :ensure
+	:config
+  (projectile-global-mode)
+	(setq projectile-completion-system 'ivy))
 
-	(add-to-list 'auto-mode-alist '("\\.org\\'" . org-mode)))
+(use-package counsel-projectile :ensure)
+(define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
 
-;; replace bullets with cool looking unicode symbols
-;;(require 'org-bullets)
-;;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;; startup splash for emacs
+(use-package dashboard :ensure
+	:config
+	(dashboard-setup-startup-hook)
+	;; Set the title
+	(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
+	;; Set the banner
+	(setq dashboard-startup-banner 'official)
+	;; Value can be
+	;; 'official which displays the official emacs logo
+	;; 'logo which displays an alternative emacs logo
+	;; 1, 2 or 3 which displays one of the text banners
+	;; "path/to/your/image.png which displays whatever image you would prefer
+	(setq dashboard-item '((recents . 5)
+												 (bookmarks . 5)
+												 (projects . 5)
+												 (agenda . 5))))
 
 ;; a new regularly spaced font
 '(variable-pitch ((t (:family "Arial" :height 160))))
@@ -106,7 +146,7 @@
 	(set-face-attribute 'org-table nil :inherit 'fixed-pitch)
 	(set-face-attribute 'org-code nil :inherit 'fixed-pitch)
 	(set-face-attribute 'org-block nil :inherit 'fixed-pitch)
-	(set-face-attribute 'org-block-background nil :inherit 'fixed-pitch))
+	)
 
 ;; all the modes where I want to have variable pitch
 (add-hook 'org-mode-hook 'set-buffer-variable-pitch)
@@ -134,10 +174,73 @@
   :config
   (autoload 'ibuffer "ibuffer" "List Buffers." t))
 
+
+;; arduino  packages
+(use-package platformio-mode :ensure)
+(use-package arduino-mode :ensure)
+(add-to-list 'auto-mode-alist '("\\.ino$" . arduino-mode))
+(add-hook 'c++-mode-hook (lambda ()
+                           (lsp)
+                           (platformio-conditionally-enable)))
+
+(use-package dimmer :ensure
+	:config
+	(dimmer-configure-which-key)
+	(dimmer-mode t))
+
+;; language servers for code introspection
+;; adds a ton of completion and debugging features
+;; to setup for js: *npm install -g javascript-typescript-langserver*
+;; to setup for python: *pip install python-language-server*
+(use-package lsp-mode :ensure
+  :commands lsp)
+
+;; extra visual features and goodies
+;; for language servers
+(use-package lsp-ui :ensure
+	:commands lsp-ui-mode)
+
+;; c++ language servers
+;; requires the install of ccls,
+;; *brew install ccls* works on mac.
+;; you have to build it on linux
+(use-package ccls :ensure
+	:config
+	;;'(ccls-initialization-options (quote (compilationDatabaseDirectory :build)))
+  :hook ((c-mode c++-mode objc-mode) .
+				 (lambda () (require 'ccls) (lsp))))
+
+(lsp-register-client
+ (make-lsp-client :new-connection (lsp-stdio-connection "ccls")
+                  :major-modes '(c-mode c++-mode)
+                  :server-id 'ccls))
+
+
+;; syntax highlighting for vue.js
+(use-package vue-mode :ensure
+	:config
+	(add-hook 'mmm-mode-hook
+          (lambda ()
+						(set-face-background 'mmm-default-submode-face nil))))
+
+;; apple's swift programming language
+(use-package swift-mode :ensure)
+(use-package flycheck-swiftlint
+  :ensure t
+  :config
+  (with-eval-after-load 'flycheck
+    (flycheck-swiftlint-setup)))
+
+;; company hook in to language servers
+(use-package company-lsp :ensure
+	:commands company-lsp)
+
 ;; company = complete-any, a completion backend
 (use-package company :ensure
   :config
   (add-hook 'prog-mode-hook 'company-mode)
+	(add-hook 'markdown-mode-hook 'company-mode)
+	(add-hook 'tex-mode 'company-mode)
   (setq company-idle-delay 0.1)
   (bind-key "<C-tab>" 'company-manual-begin))
 
@@ -146,22 +249,20 @@
   :config
   (company-statistics-mode))
 
-;; backend server for javascript autocompletion and linting
-(use-package tern
-  :config
-  (bind-key "C-c C-c" 'compile tern-mode-keymap)
-  (when (eq system-type 'windows-nt) (setq tern-command '("cmd" "/c" "tern")))
-  (add-hook 'js2-mode-hook 'tern-mode))
+;; company for latex math
+(use-package company-math :ensure
+	:config
+	(add-to-list 'company-backends 'company-math-symbols-unicode)
+	(add-to-list 'company-backends 'company-latex-commands)
+	(add-to-list 'company-backends 'company-math-symbols-latex))
 
-;; company front-end for tern javascript completion
-(use-package company-tern :ensure
-  :config
-  (add-to-list 'company-backends 'company-tern)
-  (setq company-tern-property-marker "*")
-  (add-hook 'js2-mode-hook (lambda () (tern-mode t))))
+(add-to-list 'company-backends 'company-ispell)
 
 ;; snippets
+(use-package yasnippet :ensure)
+
 (yas-global-mode 1)
+
 (use-package yasnippet-snippets :ensure)
 
 ;; strings representing colors get highlighted with that color
@@ -170,28 +271,11 @@
 ;; pretty-print json
 (use-package json-mode :ensure)
 
-;; make highlighting and working with javascript much better
-(use-package js2-mode :ensure
-  :config
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode)))
+;; syntax highlighting for sass
+(use-package sass-mode :ensure
 
-;; package for "zen-coding" html and css elements
-(use-package emmet-mode :ensure
-  :config
-  (add-hook 'sgml-mode-hook 'emmet-mode)
-  (add-hook 'css-mode-hook 'emmet-mode))
-
-;; allow mixed syntax highlighting for web templating usage
-(use-package web-mode :ensure
-  :config
-  (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode)))
+	:config
+	(add-to-list 'auto-mode-alist '("\\.scss\\'" . sass-mode)))
 
 ;; syntax for markdown, essential for Readme files
 (use-package markdown-mode :ensure
@@ -201,17 +285,21 @@
          ("\\.markdown\\'" . markdown-mode))
   :init (setq markdown-command "multimarkdown"))
 
-;; A convenient filetree
-(use-package neotree :ensure
-  :bind ("<f8>" . neotree-toggle)
-  :config
-  (setq neo-theme (if (display-graphic-p) 'ascii 'arrow))) ; make the left-side markers pretty
-
 ;; simplifies the management of undo's
 (use-package undo-tree :ensure
   :config
   (bind-key "M-/" 'undo-tree-visualize)
   (global-undo-tree-mode))
+
+(use-package ispell :ensure
+	:config
+	(bind-key "M-~" 'ispell-complete-word)
+	(global-set-key "\M-~" 'ispell-complete-word))
+
+(add-hook 'flyspell-mode-hook
+          (lambda ()
+            "Use ispell to corrent the word instead of flyspell's."
+            (define-key flyspell-mode-map (kbd "C-M-i") 'ispell-complete-word)))
 
 ;; (displays possible commands in a minibuffer when a leader key is pressed)
 (use-package which-key :ensure
@@ -231,52 +319,105 @@
   (setq ivy-use-virtual-buffers t)
   (setq ivy-count-format "(%d/%d) "))
 
-;;;;; Stuff for ivy
+;; Stuff-searcher for ivy
 (use-package swiper :ensure
-  :bind ("C-s" . swiper))
+  :bind ("C-s" . swiper-isearch))
 
-;;;;; better M-x autocomplete
-(use-package smex :ensure
-  :config
-  (global-set-key [remap execute-extended-command] 'smex)
-  )
-
-;;;;; Stuff for ivy
+;; Stuff-selector for ivy
 (use-package counsel :ensure)
 
-;;;;; plaintext organizational tool
-(use-package deft :ensure
-  :config
-  (setq deft-extensions '("txt" "tex" "org"))
-  (setq deft-directory "~/Dropbox/OrgFiles")
-  (setq deft-recursive t))
+;; Make ivy work better with projectile
+(use-package counsel-projectile :ensure)
 
-;;;;; A fancy mode line
+;; better smex ;)
+(use-package amx :ensure
+	:config
+	(amx-mode))
+
+;; A fancy mode line
 (use-package smart-mode-line :ensure
   :config
   (setq sml/no-confirm-load-theme t)
   (sml/setup)
   (sml/apply-theme 'respectful))
 
+;; A nice dark theme. Contains several sub options
+;; (use-package base16-theme :ensure
+;; 	:config
+;;   (load-theme 'base16-monokai t))
+
+;; the monokai theme
+;; (use-package monokai-theme :ensure
+ 	;; :config
+ 	;; (load-theme 'monokai t))
+
+;; a pretty good light theme
+;; (use-package solarized-theme :ensure
+;; 	:config
+;;  	(load-theme 'solarized-light t))
+
+(use-package  hydandata-light-theme :ensure
+	:config
+	(load-theme 'hydandata-light t))
+
+;; https://stackoverflow.com/questions/6954479/emacs-tramp-doesnt-work
+;;(require 'tramp-sh nil t)
+;;(setf tramp-ssh-controlmaster-options (concat "-o SendEnv TRAMP=yes " tramp-ssh-controlmaster-options))
+;;(setq tramp-default-method "ssh")
+
+;; oh, you want some vim *in* emacs
+(use-package evil :ensure)
+
+;; variable text centering
+;; for focused writting
 (use-package olivetti :ensure)
 
-;;;;; A nice dark theme. Contains several sub options
-(use-package base16-theme :ensure
-  :config
-  (load-theme 'base16-default-dark t))
+;; LaTeX mode
+(use-package auctex
+	:defer t
+	:ensure t
+	:config
+	(setq TeX-auto-save t)
+	(setq TeX-parse-self t)
+	(setq TeX-save-query nil))
+
+;; spelling correction
+(use-package flyspell
+	:config
+	(add-hook 'text-mode-hook 'flyspell-mode))
+
+;; emojis in text modes
+(use-package emojify
+	:config
+	(add-hook 'text-mode-hook 'emojify-mode))
+
+;;;;; rss feed viewer
+;(use-package elfeed :ensure)
+
+;;;;; pipe rss feed urls in org file to elfeed
+;(use-package elfeed-org :ensure
+;	:config
+;	(elfeed-org)
+;	(setq rmh-elfeed-org-files (list "~/Dropbox/OrgFiles/rss.org")))
+
+;(use-package elfeed-goodies :ensure
+;	:config
+;	(elfeed-goodies/setup))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+	 (quote
+		("c968804189e0fc963c641f5c9ad64bca431d41af2fb7e1d01a2a6666376f819c" "9be1d34d961a40d94ef94d0d08a364c3d27201f3c98c9d38e36f10588469ea57" default)))
  '(package-selected-packages
 	 (quote
-		( use-package)))
- '(ring-bell-function (quote ignore)))
+		(forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
-)
+ )
