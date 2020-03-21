@@ -160,17 +160,18 @@
   (setq buffer-face-mode-face '(:family "iA Writer Duo S" :height 150))
   (buffer-face-mode)
   (linum-mode 0)
-  (writeroom-mode 1)
+  ;; (writeroom-mode 1)
+	(olivetti-mode 1)
+	(setq show-trailing-whitespace nil)
   (blink-cursor-mode)
-	'(writeroom-fullscreen-effect (quote maximized))
+	;; '(writeroom-fullscreen-effect (quote maximized))
   (visual-line-mode 1)
   (setq truncate-lines nil)
   (setq-default line-spacing 5)
   (setq global-hl-line-mode nil))
 
-(add-hook 'markdown-mode-hook 'writing-mode)
-
-
+'(olivetti-body-width 80)
+'(olivetti-lighter "")
 
 ;; function for removing new lines in region
 ;; useful for alterting the region-fill column size of a region
@@ -425,6 +426,7 @@
  '(custom-safe-themes
 	 (quote
 		("c968804189e0fc963c641f5c9ad64bca431d41af2fb7e1d01a2a6666376f819c" "9be1d34d961a40d94ef94d0d08a364c3d27201f3c98c9d38e36f10588469ea57" default)))
+ '(olivetti-lighter "")
  '(package-selected-packages
 	 (quote
 		(writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))))
