@@ -356,23 +356,23 @@
   (sml/apply-theme 'respectful))
 
 ;; A nice dark theme. Contains several sub options
-;; (use-package base16-theme :ensure
-;; 	:config
-;;   (load-theme 'base16-monokai t))
+(use-package base16-theme :ensure
+	:config
+  (load-theme 'base16-monokai t))
 
 ;; the monokai theme
 ;; (use-package monokai-theme :ensure
- 	;; :config
- 	;; (load-theme 'monokai t))
+;;  	:config
+;;  	(load-theme 'monokai t))
 
 ;; a pretty good light theme
 ;; (use-package solarized-theme :ensure
 ;; 	:config
 ;;  	(load-theme 'solarized-light t))
 
-(use-package  hydandata-light-theme :ensure
-	:config
-	(load-theme 'hydandata-light t))
+;; (use-package  hydandata-light-theme :ensure
+;; 	:config
+;; 	(load-theme 'hydandata-light t))
 
 ;; https://stackoverflow.com/questions/6954479/emacs-tramp-doesnt-work
 ;;(require 'tramp-sh nil t)
