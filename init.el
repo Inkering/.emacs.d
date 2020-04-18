@@ -365,9 +365,9 @@ but with .org extension."
   (sml/apply-theme 'respectful))
 
 ;; A nice dark theme. Contains several sub options
-(use-package base16-theme :ensure
-	:config
-  (load-theme 'base16-monokai t))
+;; (use-package base16-theme :ensure
+;; 	:config
+;;   (load-theme 'base16-monokai t))
 
 ;; the monokai theme
 ;; (use-package monokai-theme :ensure
@@ -375,9 +375,9 @@ but with .org extension."
 ;;  	(load-theme 'monokai t))
 
 ;; a pretty good light theme
-;; (use-package solarized-theme :ensure
-;; 	:config
-;;  	(load-theme 'solarized-light t))
+(use-package solarized-theme :ensure
+	:config
+ 	(load-theme 'solarized-light t))
 
 ;; (use-package  hydandata-light-theme :ensure
 ;; 	:config
@@ -438,7 +438,7 @@ but with .org extension."
  '(olivetti-lighter "")
  '(package-selected-packages
 	 (quote
-		(writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))))
+		(pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
