@@ -164,6 +164,20 @@ but with .org extension."
 (add-hook 'markdown-mode-hook 'set-buffer-variable-pitch)
 (add-hook 'Info-mode-hook 'set-buffer-variable-pitch)
 
+;;; Install epdfinfo via 'brew install pdf-tools' and then install the
+;;; pdf-tools elisp via the use-package below. To upgrade the epdfinfo
+;;; server, just do 'brew upgrade pdf-tools' prior to upgrading to newest
+;;; pdf-tools package using Emacs package system. If things get messed
+;;; up, just do 'brew uninstall pdf-tools', wipe out the elpa
+;;; pdf-tools package and reinstall both as at the start.
+(use-package pdf-tools
+  :ensure t
+  :config
+  (custom-set-variables
+    '(pdf-tools-handle-upgrades nil)) ; Use brew upgrade pdf-tools instead.
+  (setq pdf-info-epdfinfo-program "/usr/local/bin/epdfinfo"))
+(pdf-tools-install)
+
 (defun writing-mode ()
   (interactive)
   (setq buffer-face-mode-face '(:family "iA Writer Duo S" :height 150))
@@ -379,6 +393,10 @@ but with .org extension."
 	:config
  	(load-theme 'solarized-light t))
 
+;; solarized pdf-tools midnight coloring
+'(pdf-tools-handle-upgrades nil)
+ '(pdf-view-midnight-colors (quote ("#839496" . "#fdf6e3")))
+
 ;; (use-package  hydandata-light-theme :ensure
 ;; 	:config
 ;; 	(load-theme 'hydandata-light t))
@@ -438,7 +456,8 @@ but with .org extension."
  '(olivetti-lighter "")
  '(package-selected-packages
 	 (quote
-		(pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))))
+		(pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package)))
+ )
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
