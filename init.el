@@ -225,10 +225,10 @@ but with .org extension."
                            (lsp)
                            (platformio-conditionally-enable)))
 
-(use-package dimmer :ensure
-	:config
-	(dimmer-configure-which-key)
-	(dimmer-mode t))
+;; (use-package dimmer :ensure
+;; 	:config
+;; 	(dimmer-configure-which-key)
+;; 	(dimmer-mode t))
 
 ;; language servers for code introspection
 ;; adds a ton of completion and debugging features
