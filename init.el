@@ -4,6 +4,15 @@
 ;; place custom lisp code here
 (add-to-list 'load-path "~/.emacs.d/custom-lisp")
 
+ (defun markdown-convert-buffer-to-org ()
+    "Convert the current buffer's content from markdown to
+orgmode format and save it with the current buffer's file name
+but with .org extension."
+    (interactive)
+    (shell-command-on-region (point-min) (point-max)
+                             (format "pandoc -f markdown -t org -o %s"
+                                     (concat (file-name-sans-extension (buffer-file-name)) ".org"))))
+
 ;; improve startup time
 (setq-default file-name-handler-alist nil
               gc-cons-threshold 402653184
