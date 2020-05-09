@@ -457,7 +457,8 @@ but with .org extension."
  '(package-selected-packages
 	 (quote
 		(pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package)))
- )
+ '(pdf-tools-handle-upgrades nil)
+ '(pdf-view-midnight-colors (quote ("#839496" . "#fdf6e3"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
