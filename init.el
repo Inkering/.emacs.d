@@ -25,6 +25,9 @@ but with .org extension."
 (setq-default tab-width 2)
 (setq visible-bell t)
 
+;;; Prevent Extraneous Tabs
+(setq-default indent-tabs-mode nil)
+
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 
 ;; mode for handling beancount - a ledger utility
@@ -131,9 +134,10 @@ but with .org extension."
 	:config
 	(dashboard-setup-startup-hook)
 	;; Set the title
+	(setq dashboard-startup-banner nil)
 	(setq dashboard-banner-logo-title "Welcome to Emacs Dashboard")
 	;; Set the banner
-	(setq dashboard-startup-banner 'official)
+	(setq dashboard-set-footer nil)
 	;; Value can be
 	;; 'official which displays the official emacs logo
 	;; 'logo which displays an alternative emacs logo
@@ -279,7 +283,9 @@ but with .org extension."
 	(add-hook 'markdown-mode-hook 'company-mode)
 	(add-hook 'tex-mode 'company-mode)
   (setq company-idle-delay 0.1)
-  (bind-key "<C-tab>" 'company-manual-begin))
+  (bind-key "<C-tab>" 'company-manual-begin)
+	(add-to-list 'company-backends 'company-dabbrev t)
+	(add-to-list 'company-backends 'company-dabbrev-code t))
 
 ;; sort company completions by usage stats
 (use-package company-statistics :ensure
@@ -307,6 +313,15 @@ but with .org extension."
 
 ;; pretty-print json
 (use-package json-mode :ensure)
+
+(use-package emmet-mode :ensure)
+
+(use-package web-mode :ensure
+	:config
+	(add-to-list 'auto-mode-alist '("\\.jsx?$" . web-mode))
+	(setq web-mode-content-types-alist '(("jsx" . "\\.js[x]?\\'")))
+	(add-hook 'web-mode-hook  'emmet-mode))
+
 
 ;; syntax highlighting for sass
 (use-package sass-mode :ensure
@@ -450,18 +465,53 @@ but with .org extension."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(column-number-mode t)
+ '(compilation-message-face 'default)
+ '(cua-global-mark-cursor-color "#2aa198")
+ '(cua-normal-cursor-color "#657b83")
+ '(cua-overwrite-cursor-color "#b58900")
+ '(cua-read-only-cursor-color "#859900")
  '(custom-safe-themes
-	 (quote
-		("c968804189e0fc963c641f5c9ad64bca431d41af2fb7e1d01a2a6666376f819c" "9be1d34d961a40d94ef94d0d08a364c3d27201f3c98c9d38e36f10588469ea57" default)))
+   '("67481d84a9d5cb8de661e05592928efb4c149e05e6d63d36714d9443b3946265" "c433c87bd4b64b8ba9890e8ed64597ea0f8eb0396f4c9a9e01bd20a04d15d358" "00445e6f15d31e9afaa23ed0d765850e9cd5e929be5e8e63b114a3346236c44c" "eae831de756bb480240479794e85f1da0789c6f2f7746e5cc999370bbc8d9c8a" "36746ad57649893434c443567cb3831828df33232a7790d232df6f5908263692" "8c1dd3d6fdfb2bee6b8f05d13d167f200befe1712d0abfdc47bb6d3b706c3434" "b3bcf1b12ef2a7606c7697d71b934ca0bdd495d52f901e73ce008c4c9825a3aa" "46720e46428c490e7b2ddeafc2112c5a796c8cf4af71bd6b758d5c19316aff06" "cabc32838ccceea97404f6fcb7ce791c6e38491fd19baa0fcfb336dcc5f6e23c" "ed4c48eb91d07c2e447b445e2491ef17e9b326d43a60022297fd56af4749e772" "9c4acf7b5801f25501f0db26ac3eee3dc263ed51afd01f9dcfda706a15234733" "146061a7ceea4ccc75d975a3bb41432382f656c50b9989c7dc1a7bb6952f6eb4" "e6a9337674f6c967311b939bb4f81aefb65a96908c3749f4dd8d4500f6d79242" "819d24b9aba8fcb446aecfb59f87d1817a6d3eb07de7fdec67743ef32194438b" "1d079355c721b517fdc9891f0fda927fe3f87288f2e6cc3b8566655a64ca5453" "760ce657e710a77bcf6df51d97e51aae2ee7db1fba21bbad07aab0fa0f42f834" "34ed3e2fa4a1cb2ce7400c7f1a6c8f12931d8021435bad841fdc1192bd1cc7da" "325979cd5043662dfe95e2cb68e9ff47c7f8ca088a2b463da5d049cc76a65f3b" "732ccca2e9170bcfd4ee5070159923f0c811e52b019106b1fc5eaa043dff4030" "c968804189e0fc963c641f5c9ad64bca431d41af2fb7e1d01a2a6666376f819c" "9be1d34d961a40d94ef94d0d08a364c3d27201f3c98c9d38e36f10588469ea57" default))
+ '(fci-rule-color "#eee8d5")
+ '(highlight-changes-colors '("#d33682" "#6c71c4"))
+ '(highlight-symbol-colors
+   '("#efe4da49afb1" "#cfc4e1acd08b" "#fe52c9e6b34e" "#dbb6d3c2dcf3" "#e183dee0b053" "#f944cc6dae47" "#d35fdac4e069"))
+ '(highlight-symbol-foreground-color "#586e75")
+ '(highlight-tail-colors
+   '(("#eee8d5" . 0)
+     ("#b3c34d" . 20)
+     ("#6ccec0" . 30)
+     ("#74adf5" . 50)
+     ("#e1af4b" . 60)
+     ("#fb7640" . 70)
+     ("#ff699e" . 85)
+     ("#eee8d5" . 100)))
+ '(hl-bg-colors
+   '("#e1af4b" "#fb7640" "#ff6849" "#ff699e" "#8d85e7" "#74adf5" "#6ccec0" "#b3c34d"))
+ '(hl-fg-colors
+   '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
+ '(hl-paren-colors '("#2aa198" "#b58900" "#268bd2" "#6c71c4" "#859900"))
+ '(lsp-ui-doc-border "#586e75")
+ '(nrepl-message-colors
+   '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(olivetti-lighter "")
  '(package-selected-packages
-	 (quote
-		(pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package)))
+   '(web-mode emmet-mode imenu-list aggressive-indent modus-operandi-theme pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))
  '(pdf-tools-handle-upgrades nil)
- '(pdf-view-midnight-colors (quote ("#839496" . "#fdf6e3"))))
+ '(pdf-view-midnight-colors '("#839496" . "#fdf6e3"))
+ '(pos-tip-background-color "#eee8d5")
+ '(pos-tip-foreground-color "#586e75")
+ '(show-paren-mode t)
+ '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
+ '(term-default-bg-color "#fdf6e3")
+ '(term-default-fg-color "#657b83")
+ '(tool-bar-mode nil)
+ '(weechat-color-list
+   '(unspecified "#fdf6e3" "#eee8d5" "#a7020a" "#dc322f" "#5b7300" "#859900" "#866300" "#b58900" "#0061a8" "#268bd2" "#a00559" "#d33682" "#007d76" "#2aa198" "#657b83" "#839496")))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(default ((t (:family "Monaco" :foundry "nil" :slant normal :weight normal :height 141 :width normal)))))
