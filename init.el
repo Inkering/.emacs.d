@@ -1,5 +1,6 @@
 ;;; Emacs Config
 ;; by Dieter Brehm
+;; updated 2022
 
 ;; place custom lisp code here
 (add-to-list 'load-path "~/.emacs.d/custom-lisp")
@@ -12,11 +13,6 @@ but with .org extension."
     (shell-command-on-region (point-min) (point-max)
                              (format "pandoc -f markdown -t org -o %s"
                                      (concat (file-name-sans-extension (buffer-file-name)) ".org"))))
-
-;; improve startup time
-(setq-default file-name-handler-alist nil
-              gc-cons-threshold 402653184
-							gc-cons-percentage 0.6)
 ;; misc
 (setq c-default-style "linux"
       c-basic-offset 2
@@ -30,10 +26,6 @@ but with .org extension."
 
 (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t))
 
-;; mode for handling beancount - a ledger utility
-(require 'beancount)
-  (add-to-list 'auto-mode-alist '("\\.beancount\\'" . beancount-mode))
-
 ;; Install Melpa
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -46,30 +38,17 @@ but with .org extension."
   (package-refresh-contents)
 	(package-install 'use-package))
 
-(setq gnutls-algorithm-priority "NORMAL:-VERS-TLS1.3")
-
-;; (org-babel-load-file (expand-file-name "~/.emacs.d/literate-config.org"))
-
-;; set font based on Operating system
-(if (eq system-type 'ms-dos)
-		(progn
-			(set-face-attribute 'default t :font "Consolas 11")))
-
 (if (eq system-type 'darwin)
 		(progn
 			(set-face-attribute 'default t :font "Monaco 12")))
 	    ;; (set-face-attribute 'default t :font "iA Writer Mono S")))
 
-(if (eq system-type 'gnu/linux)
-		(progn
-			(set-face-attribute 'default t :font "Hack 12")))
-
 ;; global show whitespace
-(setq-default show-trailing-whitespace t)
+;; (setq-default show-trailing-whitespace t)
 (savehist-mode 1)
 
 ;; highlight current line
-;;(global-hl-line-mode +1)
+;; (global-hl-line-mode +1)
 
 ;; highlight parens
 (show-paren-mode 1)
@@ -109,8 +88,8 @@ but with .org extension."
 ;; don't show scroll bars
 (toggle-scroll-bar -1)
 
-;; how many lines to move when scrolling
-(setq scroll-step 1)
+;; ;; how many lines to move when scrolling
+;; (setq scroll-step 1)
 
 ;; default find file path for windows
 (if (eq system-type 'ms-dos)
@@ -220,7 +199,6 @@ but with .org extension."
   :config
   (autoload 'ibuffer "ibuffer" "List Buffers." t))
 
-
 ;; arduino  packages
 (use-package platformio-mode :ensure)
 (use-package arduino-mode :ensure)
@@ -229,37 +207,32 @@ but with .org extension."
                            (lsp)
                            (platformio-conditionally-enable)))
 
-;; (use-package dimmer :ensure
-;; 	:config
-;; 	(dimmer-configure-which-key)
-;; 	(dimmer-mode t))
-
 ;; language servers for code introspection
 ;; adds a ton of completion and debugging features
 ;; to setup for js: *npm install -g javascript-typescript-langserver*
 ;; to setup for python: *pip install python-language-server*
-(use-package lsp-mode :ensure
-  :commands lsp)
+;; (use-package lsp-mode :ensure
+  ;; :commands lsp)
 
 ;; extra visual features and goodies
 ;; for language servers
-(use-package lsp-ui :ensure
-	:commands lsp-ui-mode)
+;; (use-package lsp-ui :ensure
+	;; :commands lsp-ui-mode)
 
 ;; c++ language servers
 ;; requires the install of ccls,
 ;; *brew install ccls* works on mac.
 ;; you have to build it on linux
-(use-package ccls :ensure
-	:config
-	;;'(ccls-initialization-options (quote (compilationDatabaseDirectory :build)))
-  :hook ((c-mode c++-mode objc-mode) .
-				 (lambda () (require 'ccls) (lsp))))
+;; (use-package ccls :ensure
+;; 	:config
+;; 	;;'(ccls-initialization-options (quote (compilationDatabaseDirectory :build)))
+;;   :hook ((c-mode c++-mode objc-mode) .
+;; 				 (lambda () (require 'ccls) (lsp))))
 
-(lsp-register-client
- (make-lsp-client :new-connection (lsp-stdio-connection "ccls")
-                  :major-modes '(c-mode c++-mode)
-                  :server-id 'ccls))
+;; (lsp-register-client
+;;  (make-lsp-client :new-connection (lsp-stdio-connection "ccls")
+;;                   :major-modes '(c-mode c++-mode)
+;;                   :server-id 'ccls))
 
 
 ;; syntax highlighting for vue.js
@@ -273,8 +246,8 @@ but with .org extension."
 (use-package swift-mode :ensure)
 
 ;; company hook in to language servers
-(use-package company-lsp :ensure
-	:commands company-lsp)
+;; (use-package company-lsp :ensure
+;; 	:commands company-lsp)
 
 ;; company = complete-any, a completion backend
 (use-package company :ensure
@@ -447,6 +420,10 @@ but with .org extension."
 	:config
 	(add-hook 'text-mode-hook 'emojify-mode))
 
+(use-package lua-mode)
+
+(use-package )
+
 ;;;;; rss feed viewer
 ;(use-package elfeed :ensure)
 
@@ -497,7 +474,7 @@ but with .org extension."
    '("#dc322f" "#cb4b16" "#b58900" "#5b7300" "#b3c34d" "#0061a8" "#2aa198" "#d33682" "#6c71c4"))
  '(olivetti-lighter "")
  '(package-selected-packages
-   '(web-mode emmet-mode imenu-list aggressive-indent modus-operandi-theme pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))
+   '(lua-mode poly-R polymode ag web-mode emmet-mode imenu-list aggressive-indent modus-operandi-theme pdf-tools writeroom-mode forge dimmer hydandata-light-theme vagrant-tramp pandoc-mode base16-theme amx hledger-mode emojify solarized-theme solarized monokai-theme processing-mode ess 0blayout flycheck-swiftlint swift-mode vue-mode ccls arduino-mode platformio-mode exec-path-from-shell use-package))
  '(pdf-tools-handle-upgrades nil)
  '(pdf-view-midnight-colors '("#839496" . "#fdf6e3"))
  '(pos-tip-background-color "#eee8d5")
